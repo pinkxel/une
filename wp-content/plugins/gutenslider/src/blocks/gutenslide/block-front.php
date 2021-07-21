@@ -1,0 +1,260 @@
+<?php
+/**
+* Gutenslide Dynamic Render Callback *
+*
+* @since   3.0.0
+* @package Gutenslider
+*/
+
+if ( ! function_exists( 'eedee_gutenslide_dynamic_render_callback' ) ) {
+    /**
+    * Register Gutenberg block template that is rendered on server side
+    *
+    * @param Array  $attr are the attributes from the block.
+    * @param String $inner_content the content of gutensliders innerBlocks.
+    * @link  https://wordpress.org/gutenberg/handbook/blocks/writing-your-first-block-type#enqueuing-block-scripts
+    * @uses  {save} the content returned from the save function of Gutenslider block.
+    * @since 1.16.0
+    */
+    function eedee_gutenslide_dynamic_render_callback( $attr, $inner_content ){
+
+        $POSITION_CLASSNAMES = array(
+            'top left' => 'is-position-top-left',
+            'top center' => 'is-position-top-center',
+            'top right' => 'is-position-top-right',
+            'center left' => 'is-position-center-left',
+            'center center' => 'is-position-center-center',
+            'center' => 'is-position-center-center',
+            'center right' => 'is-position-center-right',
+            'bottom left' => 'is-position-bottom-left',
+            'bottom center' => 'is-position-bottom-center',
+            'bottom right' => 'is-position-bottom-right',
+        );
+
+        $class = 'swiper-slide wp-block-eedee-block-gutenslide';
+		if ( isset( $attr['className'] ) ) {
+			$class .= ' ' . $attr['className'];
+		}
+
+        if (isset($attr['contentPosition']) && $attr['contentPosition'] !== '') {
+            $class .= sprintf(' %1$s', $POSITION_CLASSNAMES[ $attr['contentPosition'] ]);
+        }
+
+        if (isset($attr['background'])) {
+            $bg = $attr['background'];
+        } else {
+            $bg = array();
+        }
+
+        // set default values.
+        $bg['backgroundColor']           = $bg['backgroundColor'] ?? '#fffa';
+        $bg['backgroundGradient']        = $bg['backgroundGradient'] ?? '';
+        $bg['backgroundType']            = $bg['backgroundType'] ?? 'color';
+        $bg['backgroundImage']           = $bg['backgroundImage'] ?? array( 'id' => null );
+        $bg['backgroundFocalPoint']      = $bg['backgroundFocalPoint'] ??
+        array(
+            'x' => 0.5,
+            'y' => 0.5,
+        );
+
+        $bg['backgroundVideoFocalPoint'] = $bg['backgroundVideoFocalPoint'] ??
+        array(
+            'x' => 0.5,
+            'y' => 0.5,
+        );
+        $bg['backgroundImageSize']       = $bg['backgroundImageSize'] ?? 'cover';
+        $bg['backgroundVideoSize']       = $bg['backgroundVideoSize'] ?? 'cover';
+        $bg['backgroundVideo']           = $bg['backgroundVideo'] ?? array();
+        $bg['backgroundVideoLoop']       = $bg['backgroundVideoLoop'] ?? true;
+        $bg['backgroundVideoMuted']      = $bg['backgroundVideoMuted'] ?? true;
+        $bg['backgroundOverlayImage']    = $bg['backgroundOverlayImage'] ?? '';
+        $bg['backgroundOverlayVideo']    = $bg['backgroundOverlayVideo'] ?? '';
+        $bg['backgroundOverlayOpacity']  = $bg['backgroundOverlayOpacity'] ?? 50;
+
+        if (!isset($bg['backgroundImage']['id'])) {
+            $bg['backgroundImage']['id'] = null;
+        }
+        if (!isset($bg['backgroundImage']['alt'])) {
+            $bg['backgroundImage']['alt'] = '';
+        }
+
+        // construct background style.
+        if ('color' === $bg['backgroundOverlayImage']
+            || 'gradient' === $bg['backgroundOverlayImage']
+            || 'color' === $bg['backgroundOverlayVideo']
+            || 'gradient' === $bg['backgroundOverlayVideo']
+        ) {
+            $bg_opacity = $bg['backgroundOverlayOpacity'] / 100;
+        } else {
+            $bg_opacity = 1;
+        }
+
+        $background_style = null;
+
+        if ('color' === $bg['backgroundType']
+            || 'gradient' === $bg['backgroundType']
+            || 'none' === $bg['backgroundType']
+        ) {
+            if (isset($attr['minWidth'])) {
+                $background_style = sprintf('--slide-min-width:%1$s;', $attr['minWidth']);
+            }
+        }
+
+        $bg_overlay_style = null;
+
+        if ('color' === $bg['backgroundType']
+            || 'color' === $bg['backgroundOverlayImage']
+            || 'color' === $bg['backgroundOverlayVideo']
+        ) {
+            $bg_overlay_style = $bg['backgroundColor'];
+        } elseif ('gradient' === $bg['backgroundType']
+            || 'gradient' === $bg['backgroundOverlayImage']
+            || 'gradient' === $bg['backgroundOverlayVideo']
+        ) {
+            $bg_overlay_style = $bg['backgroundGradient'];
+        }
+
+        if (null !== $bg_overlay_style && ! empty($bg_overlay_style)) {
+            $bg_overlay_style = 'background:' . $bg_overlay_style . ';';
+        } else {
+            $bg_overlay_style = '';
+        }
+
+        $background_overlay_style = sprintf(
+            'opacity:%1$s;%2$s',
+            esc_attr($bg_opacity),
+            esc_attr($bg_overlay_style)
+        );
+
+        $background_content = '';
+
+        if ((('image' === $bg['backgroundType'] )
+            || ( 'color' === $bg['backgroundType'] && 'color' === $bg['backgroundOverlayImage'] )
+            || ( 'gradient' === $bg['backgroundType'] && 'gradient' === $bg['backgroundOverlayImage'] ))
+            && isset($bg['backgroundImage']['url'])
+        ) {
+            $image_style = sprintf(
+                'object-fit: %1$s; object-position: %2$s;',
+                esc_attr($bg['backgroundImageSize']),
+                esc_attr(
+                    $bg['backgroundFocalPoint']['x'] * 100 . '%% '
+                    . $bg['backgroundFocalPoint']['y'] * 100 . '%%'
+                )
+            );
+
+            $image_class = sprintf(
+                'swiper-lazy wp-image-%1$s',
+                esc_attr($bg['backgroundImage']['id'])
+            );
+
+            $image_srcset = wp_get_attachment_image_srcset(
+                $bg['backgroundImage']['id']
+            );
+            $image_sizes  = wp_get_attachment_image_sizes(
+                $bg['backgroundImage']['id'], false
+            );
+            $medium_src = wp_get_attachment_image_src(
+                $bg['backgroundImage']['id'],
+                'medium'
+            );
+
+            // when the image gets the wp-image-xxx class srcset sizes width
+            // height are added automatically but swiper lazy loading expects
+            // data-... attributes so we construct them manually ...
+            //
+            $background_content = sprintf(
+                '<img class="%1$s" src="%2$s" alt="%3$s" style="%4$s" />',
+                $image_class,
+                esc_url($bg['backgroundImage']['url']),
+                esc_attr($bg['backgroundImage']['alt']),
+                $image_style
+            );
+
+            // $background_content = sprintf(
+            //     '<img class="%1$s" alt="%2$s" style="%3$s"' .
+            //     ' data-srcset="%4$s" data-sizes="%5$s" ' .
+            //     ' width="%6$spx" height="%7$spx"/>',
+            //     $image_class,
+            //     esc_attr($bg['backgroundImage']['alt']),
+            //     $image_style,
+            //     $image_srcset,
+            //     $image_sizes,
+            //     $medium_src[1],
+            //     $medium_src[2]
+            // );
+        } elseif ((( 'video' === $bg['backgroundType'] )
+            || ( 'color' === $bg['backgroundType'] && 'color' === $bg['backgroundOverlayVideo'] )
+            || ( 'gradient' === $bg['backgroundType'] && 'gradient' === $bg['backgroundOverlayVideo'] ))
+            && isset($bg['backgroundVideo']['url'])
+        ) {
+            $poster = '';
+            if (isset($bg['backgroundImage']) && isset($bg['backgroundImage']['url'])) {
+                $poster = esc_url($bg['backgroundImage']['url']);
+            }
+
+            $video_style = sprintf(
+                'object-fit: %1$s; object-position: %2$s; --ed-vw: %3$s; --ed-vh: %4$s;',
+                esc_attr($bg['backgroundVideoSize']),
+                esc_attr($bg['backgroundVideoFocalPoint']['x'] * 100 . '%% ' . $bg['backgroundVideoFocalPoint']['y'] * 100 . '%%'),
+                $bg['backgroundVideo']['width'],
+                $bg['backgroundVideo']['height']
+            );
+
+            $background_content = sprintf(
+                '<video src="%1$s" class="swiper-lazy" autoplay playsinline %2$s %3$s'
+                . ' poster="%4$s" style="%5$s"></video>',
+                esc_url($bg['backgroundVideo']['url']),
+                esc_attr($bg['backgroundVideoLoop']) ? 'loop' : '',
+                esc_attr($bg['backgroundVideoMuted']) ? 'muted' : '',
+                $poster,
+                $video_style
+            );
+        }
+
+        $has_media_background = 'video' === $bg['backgroundType'] || 'image' === $bg['backgroundType'];
+
+        $background_classes = sprintf(
+            'eedee-background-div%1$s',
+            $has_media_background ? '' : ' no-media-background'
+        );
+
+        $background_div = sprintf(
+            '<div class="%2$s">'
+            . $background_content
+            . '<div class="eedee-background-div__overlay" style="%1$s"></div>'
+            . '</div>',
+            $background_overlay_style,
+            $background_classes
+        );
+
+        $slide_link = '';
+
+		$additional_link_attributes = '';
+		if ( $attr['opensInNewTab'] ) {
+			$additional_link_attributes = ' target="_blank" rel="noreferrer noopener"';
+		}
+
+        if (isset($attr['linkUrl']) && $attr['linkUrl'] !== '') {
+            $slide_link = sprintf(
+                '<a class="slide-link" href="%1$s"%2$s></a>',
+                esc_url($attr['linkUrl']),
+				$additional_link_attributes
+            );
+        }
+
+        return sprintf(
+            '<div class="%1$s" style="%2$s">'
+            . '%3$s'
+            . '<div class="slide-content">'
+            . '%4$s'
+            . '</div>'
+            . '%5$s'
+            . '</div>',
+            $class,
+            $background_style,
+            $background_div,
+            $inner_content,
+            $slide_link
+        );
+    }
+}
