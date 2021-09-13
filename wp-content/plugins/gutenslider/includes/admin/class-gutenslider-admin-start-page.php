@@ -94,26 +94,40 @@ class Gutenslider_Admin_Start_Page {
 		$screen    = get_current_screen();
 		$screen_id = $screen ? $screen->id : '';
 
+
 		// Only enqueue admin scripts and styles on relevant pages.
 		if ( false !== strpos( $screen_id, 'settings-page-gutenslider' ) ) {
-
 			// Define where the assets are loaded from.
-			$dir = Gutenslider()->asset_source( 'build' );
+			$dir = dirname(dirname(dirname(__FILE__)));
+
+			include plugin_dir_path( dirname(dirname( __FILE__ )) ) . 'src/blocks/gutenslider/attributes.php';
+
+			$eedee_gutenslider_block_variables = array(
+				'siteUrl' => get_site_url(),
+				'arrows' => $eedee_gutenslider_arrows,
+				'gutensliderDividers' => $eedee_gutenslider_dividers
+			);
 
 			wp_enqueue_style(
 				'gutenslider-getting-started',
-				$dir . '/gutenslider-admin.css',
-				GUTENSLIDER_VERSION,
-				true
+				plugins_url('build/gutenslider-admin.css', dirname(dirname(__FILE__))),
+				GUTENSLIDER_VERSION
 			);
+
+			$script_asset_path = "$dir/build/gutenslider-pro.asset.php";
+			$script_asset = include $script_asset_path;
 
 			wp_enqueue_script(
 				'gutenslider-admin-js',
-				$dir . '/gutenslider-admin.js',
-				array(),
-				GUTENSLIDER_VERSION,
+				plugins_url('build/gutenslider-admin.js', dirname(dirname(__FILE__))),
+				array_merge($script_asset['dependencies'], array( 'eedee-gutenslider-block-editor-pro', 'wp-api' ) ),
+				$script_asset['version'],
 				true
 			);
+
+
+			wp_set_script_translations('gutenslider-admin-js', 'eedee');
+			wp_localize_script('gutenslider-admin-js', 'eedeeGutenslider', $eedee_gutenslider_block_variables);
 		}
 
 	}

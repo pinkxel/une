@@ -18,6 +18,9 @@ if ( ! function_exists( 'eedee_gutenslide_dynamic_render_callback' ) ) {
     */
     function eedee_gutenslide_dynamic_render_callback( $attr, $inner_content ){
 
+		$video_width = 0;
+		$video_height = 0;
+
         $POSITION_CLASSNAMES = array(
             'top left' => 'is-position-top-left',
             'top center' => 'is-position-top-center',
@@ -47,29 +50,29 @@ if ( ! function_exists( 'eedee_gutenslide_dynamic_render_callback' ) ) {
         }
 
         // set default values.
-        $bg['backgroundColor']           = $bg['backgroundColor'] ?? '#fffa';
-        $bg['backgroundGradient']        = $bg['backgroundGradient'] ?? '';
-        $bg['backgroundType']            = $bg['backgroundType'] ?? 'color';
-        $bg['backgroundImage']           = $bg['backgroundImage'] ?? array( 'id' => null );
-        $bg['backgroundFocalPoint']      = $bg['backgroundFocalPoint'] ??
+        $bg['backgroundColor']           = isset($bg['backgroundColor']) ? $bg['backgroundColor']: '#fffa';
+        $bg['backgroundGradient']        = isset($bg['backgroundGradient']) ? $bg['backgroundGradient']: '';
+        $bg['backgroundType']            = isset($bg['backgroundType']) ? $bg['backgroundType']: 'color';
+        $bg['backgroundImage']           = isset($bg['backgroundImage']) ? $bg['backgroundImage']: array( 'id' => null );
+        $bg['backgroundFocalPoint']      = isset($bg['backgroundFocalPoint']) ? $bg['backgroundFocalPoint' ]:
         array(
             'x' => 0.5,
             'y' => 0.5,
         );
 
-        $bg['backgroundVideoFocalPoint'] = $bg['backgroundVideoFocalPoint'] ??
+        $bg['backgroundVideoFocalPoint'] = isset($bg['backgroundVideoFocalPoint']) ? $bg['backgroundVideoFocalPoint']:
         array(
             'x' => 0.5,
             'y' => 0.5,
         );
-        $bg['backgroundImageSize']       = $bg['backgroundImageSize'] ?? 'cover';
-        $bg['backgroundVideoSize']       = $bg['backgroundVideoSize'] ?? 'cover';
-        $bg['backgroundVideo']           = $bg['backgroundVideo'] ?? array();
-        $bg['backgroundVideoLoop']       = $bg['backgroundVideoLoop'] ?? true;
-        $bg['backgroundVideoMuted']      = $bg['backgroundVideoMuted'] ?? true;
-        $bg['backgroundOverlayImage']    = $bg['backgroundOverlayImage'] ?? '';
-        $bg['backgroundOverlayVideo']    = $bg['backgroundOverlayVideo'] ?? '';
-        $bg['backgroundOverlayOpacity']  = $bg['backgroundOverlayOpacity'] ?? 50;
+        $bg['backgroundImageSize']       = isset($bg['backgroundImageSize']) ? $bg['backgroundImageSize']: 'cover';
+        $bg['backgroundVideoSize']       = isset($bg['backgroundVideoSize']) ? $bg['backgroundVideoSize']: 'cover';
+        $bg['backgroundVideo']           = isset($bg['backgroundVideo']) ? $bg['backgroundVideo']: array();
+        $bg['backgroundVideoLoop']       = isset($bg['backgroundVideoLoop']) ? $bg['backgroundVideoLoop']: true;
+        $bg['backgroundVideoMuted']      = isset($bg['backgroundVideoMuted']) ? $bg['backgroundVideoMuted']: true;
+        $bg['backgroundOverlayImage']    = isset($bg['backgroundOverlayImage']) ? $bg['backgroundOverlayImage']: '';
+        $bg['backgroundOverlayVideo']    = isset($bg['backgroundOverlayVideo']) ? $bg['backgroundOverlayVideo']: '';
+        $bg['backgroundOverlayOpacity']  = isset($bg['backgroundOverlayOpacity']) ? $bg['backgroundOverlayOpacity']: 50;
 
         if (!isset($bg['backgroundImage']['id'])) {
             $bg['backgroundImage']['id'] = null;
@@ -192,22 +195,33 @@ if ( ! function_exists( 'eedee_gutenslide_dynamic_render_callback' ) ) {
                 $poster = esc_url($bg['backgroundImage']['url']);
             }
 
+			if ( array_key_exists('width', $bg['backgroundVideo'])) {
+				$video_width = $bg['backgroundVideo']['width'];
+			}
+			if ( array_key_exists('height', $bg['backgroundVideo'])) {
+				$video_height = $bg['backgroundVideo']['height'];
+			}
+			$video_type = isset($bg['backgroundVideo']['mime']) ? $bg['backgroundVideo']['mime'] : 'video/mp4';
+
             $video_style = sprintf(
                 'object-fit: %1$s; object-position: %2$s; --ed-vw: %3$s; --ed-vh: %4$s;',
                 esc_attr($bg['backgroundVideoSize']),
                 esc_attr($bg['backgroundVideoFocalPoint']['x'] * 100 . '%% ' . $bg['backgroundVideoFocalPoint']['y'] * 100 . '%%'),
-                $bg['backgroundVideo']['width'],
-                $bg['backgroundVideo']['height']
+                $video_width,
+                $video_height
             );
 
             $background_content = sprintf(
-                '<video src="%1$s" class="swiper-lazy" autoplay playsinline %2$s %3$s'
-                . ' poster="%4$s" style="%5$s"></video>',
+                '<video src="%1$s" class="swiper-lazy" type="%6$s" autoplay playsinline %2$s %3$s'
+                . ' poster="%4$s" style="%5$s" width="%7$s" height="%8$s"></video>',
                 esc_url($bg['backgroundVideo']['url']),
                 esc_attr($bg['backgroundVideoLoop']) ? 'loop' : '',
                 esc_attr($bg['backgroundVideoMuted']) ? 'muted' : '',
                 $poster,
-                $video_style
+                $video_style,
+				$video_type,
+				$video_width,
+				$video_height
             );
         }
 

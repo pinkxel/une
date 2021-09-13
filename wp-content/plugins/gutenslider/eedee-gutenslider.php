@@ -7,7 +7,7 @@
  * Description: WordPress slider plugin for Gutenberg. Create an image slider, video slider, fullscreen slider with this powerful slider block and add any block on top. Slide anything!
  * Author: eedee
  * Author URI: https://eedee.net
- * Version: 5.1.2
+ * Version: 5.1.5
  * License: GPL2+
  * License URI: https://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain: eedee-gutenslider

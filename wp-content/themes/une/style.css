@@ -6,11 +6,259 @@ Author: pinkxel
 Author URI: https://pinkxel.com
 Description: Tema para sitio web de UNE diseñado y desarrollado por pinkxel.
 Tags: une festival pinkxel
-Version: 1.3.1625878742
+Version: 1.3.1625878742.15
 Updated: 2021-07-10 00:59:02
 
 */
 
+@font-face {
+  font-family: stolzl;
+  src: url(Stolzl-Medium.ttf);
+}
+
+:root {
+  --gris: #ddd;
+  --violeta: #bb00dd;
+  --font-base: stolzl, sans-serif;
+  --font-headings: stolzl, sans-serif;
+  --global--line-height-heading: 1.1;
+  --global--letter-spacing: -0.05em;
+  --heading--letter-spacing-h1: -0.075em;
+  --heading--letter-spacing-h2: -0.075em;
+  --heading--letter-spacing-h3: -0.075em;
+  --heading--letter-spacing-h4: -0.075em;
+}
+
+::selection {
+  background: white;
+}
+
+.is-dark-theme ::selection {
+  background: rgba(128, 128, 128, 0.2);
+}
+
+.wp-block-eedee-block-gutenslider {
+  --gutenslider-arrow-color: var(--global--color-primary) !important;
+}
+
+body {
+  letter-spacing: -0.05em;
+}
+
+h1,
+h1.entry-title,
+h2,
+h3,
+h4 {
+  letter-spacing: -0.075em;
+}
+
+p {
+  line-height: initial;
+}
+
+hr.wp-block-separator {
+  margin-inline-start: 0;
+}
+
+.home .site-header {
+  padding-bottom: 0;
+}
+
+.site-description {
+  display: inline-block;
+  max-width: 6em;
+  font-size: 1.5em;
+  line-height: 1em;
+  vertical-align: middle;
+}
+
+/* tmp */
+#comments,
+.posted-by,
+.post-taxonomies,
+.post-navigation {
+  display: none;
+}
+
 .is-dark-theme.is-dark-theme {
   --global--color-background: black;
+}
+
+.site-logo .custom-logo {
+  filter: saturate(0) brightness(0);
+}
+
+.is-dark-theme .site-logo .custom-logo {
+  filter: invert(1) saturate(0) brightness(8);
+}
+
+/*.site-logo .custom-logo:hover {
+  filter: hue-rotate(258deg) saturate(0) brightness(1) contrast(16);
+}*/
+
+.post-thumbnail .wp-post-image {
+  min-width: 66.6666%;
+}
+
+.singular .entry-header {
+  border: none;
+}
+
+.wp-block-cover,
+.wp-block-cover-image {
+  background-color: transparent;
+}
+
+.pixel img,
+.pixel video {
+  image-rendering: pixelated;
+  object-fit: contain !important;
+}
+
+.margin-back .slide-content {
+  margin-inline-end: 66.6666%;
+}
+
+.wp-block-post-featured-image a {
+  display: block;
+}
+
+.wp-block-post-featured-image img {
+  max-width: 100% !important;
+}
+
+.wp-block-post-featured-image img[src*=".svg"] {
+  width: 100%;
+}
+
+.wp-block-post-terms {
+  font-size: 0;
+}
+
+.wp-block-post-terms a {
+  font-size: var(--global--font-size-base);
+}
+
+.wp-block-post-terms a:before {
+  content: "une ";
+}
+
+.wp-block-post-terms a[href*="actividad"] {
+  display: none;
+}
+
+img[src*="comu-6"] {
+  /*filter: contrast(0) brightness(0.5);
+  filter: sepia(1) hue-rotate(80deg) saturate(4);*/
+  image-rendering: pixelated;
+  background: var(--violeta);
+  /*mix-blend-mode: multiply;*/
+}
+
+html:not(.is-dark-theme) img[src*="pinkxel.gif"] {
+  filter: invert(1);
+}
+
+img[src*="pixel."] {
+  image-rendering: pixelated;
+}
+
+.is-dark-theme img[src*="asoc-tambo-bronce.png"],
+.is-dark-theme img[src*="asimtria.svg"] {
+  filter: invert(1);
+}
+
+.is-dark-theme img[src*="red-festilab.png"] {
+  filter: hue-rotate(180deg) invert(1) saturate(5) hue-rotate(45deg) saturate(2);
+}
+
+.cvwp-video-player {
+  margin: 0 auto;
+}
+
+.is-flex-container .cvwp-video-player {
+  overflow: hidden;
+}
+
+.is-flex-container .cvwp-video-player > iframe {
+  margin-top: -3em;
+  height: calc(100% + 6em);
+  pointer-events: none;
+}
+
+/*:root .caldera-grid .form-control {
+  height: initial;
+}
+
+:root .caldera-grid .btn {
+  padding: var(--button--padding-vertical) var(--button--padding-horizontal);
+}*/
+
+:root .caldera-grid label {
+  font-weight: normal;
+}
+
+:root input[type="radio"]:after {
+  left: calc(50%);
+  top: calc(50%);
+  width: 14px;
+  height: 14px;
+  transform: translate(calc(-50%), calc(-50%));
+}
+
+:root .caldera-grid .form-control.cf2-file .btn {
+  color: var(--global--color-background);
+  background-color: var(--global--color-primary);
+  border: var(--button--border-width) solid var(--global--color-primary);
+  transition: none;
+}
+
+:root .caldera-grid .form-control.cf2-file .btn:hover {
+  color: inherit;
+  background-color: transparent;
+}
+
+.wp-block-cover:not([class*="background-color"])
+  .wp-block-cover__inner-container,
+.wp-block-cover:not([class*="background-color"]) .wp-block-cover-image-text,
+.wp-block-cover:not([class*="background-color"]) .wp-block-cover-text,
+.wp-block-cover-image:not([class*="background-color"])
+  .wp-block-cover__inner-container,
+.wp-block-cover-image:not([class*="background-color"])
+  .wp-block-cover-image-text,
+.wp-block-cover-image:not([class*="background-color"]) .wp-block-cover-text {
+  color: inherit;
+}
+
+.site .button:not(:hover):not(:active):not(.has-text-color),
+button:not(:hover):not(:active):not(.has-text-color),
+input[type="submit"]:not(:hover):not(:active):not(.has-text-color),
+input[type="reset"]:not(:hover):not(:active):not(.has-text-color),
+.wp-block-search
+  .wp-block-search__button:not(:hover):not(:active):not(.has-text-color),
+.wp-block-button
+  .wp-block-button__link:not(:hover):not(:active):not(.has-text-color),
+.wp-block-file
+  a.wp-block-file__button:not(:hover):not(:active):not(.has-text-color) {
+  color: var(--global--color-background);
+}
+
+.wp-block-eedee-block-gutenslider .swiper-pagination-fraction,
+.wp-block-eedee-block-gutenslider .swiper-pagination-custom,
+.wp-block-eedee-block-gutenslider.dot-position-top
+  .swiper-container-vertical
+  ~ .swiper-pagination-bullets,
+.wp-block-eedee-block-gutenslider.dot-position-bottom
+  .swiper-container-vertical
+  ~ .swiper-pagination-bullets,
+.wp-block-eedee-block-gutenslider
+  .swiper-container-horizontal
+  ~ .swiper-pagination-bullets {
+  -ms-grid-column-align: flex-start;
+  justify-self: flex-start;
+}
+
+:root .ocultar {
+  display: none !important;
 }

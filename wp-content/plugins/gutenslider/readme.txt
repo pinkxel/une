@@ -2,7 +2,7 @@
 Contributors: eedee, wordpressslider, gutenbergslider, freemius
 Tags: slider, slider block, image slider, video slider, wordpress slider, carousel, gallery, responsive, media slider, content slider
 Requires at least: 5.6
-Tested up to: 5.7
+Tested up to: 5.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -49,6 +49,7 @@ Gutenslider is easy to use, fast, and very powerful and developed by trusted dev
 - [Fullscreen slider](https://gutenslider.org/examples/fullscreen-background-slider-example/) (slider will be in the background of your content).
 - Very easy to use because it is a Gutenberg block - no need to go away from your backend editor
 - Hyperlink Slides
+- webp support
 
 == Plugin Pro Features 💎 ==
 
@@ -151,6 +152,18 @@ To get the full experience of the next-generation WordPress block editor, you’
 2. Gutenslider Creation (Backend + Frontend)
 
 == Changelog ==
+
+= 5.1.5 =
+* add one more block Pattern: "Full Height Slider"
+* fix block appender layout in fixed content slider
+* fix now backwards compatible to PHP 5.3
+
+= 5.1.4 =
+* fix dots showing on mobile even if turned off
+* fix "Add Empty Slide" button not working on some setups
+
+= 5.1.3 =
+* fix a bug in GradientPicker component
 
 = 5.1.2 =
 * fix unique block ids on block copying

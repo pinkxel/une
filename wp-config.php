@@ -25,7 +25,7 @@ define('DB_USER', 'unedevpinkxelcom');
 define('DB_PASSWORD', 'XnJrG8mW');
 
 /** MySQL hostname */
-define('DB_HOST', 'mysql.une.dev.pinkxel.com');
+define('DB_HOST', 'mysql.une.la');
 
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8');
@@ -96,6 +96,7 @@ if (preg_match("/^(.*)\.dream\.website$/", $_SERVER['HTTP_HOST'])) {
         define('WP_HOME',    $proto . '://' . $_SERVER['HTTP_HOST']);
 }
 
+define( 'WPCACHEHOME', '/home/pinkxel/une.la/wp-content/plugins/wp-super-cache/' );
 /* That's all, stop editing! Happy blogging. */
 
 /** Absolute path to the WordPress directory. */

@@ -54,11 +54,15 @@
 				<?php endif; ?>
 			</div><!-- .site-name -->
 			<div class="powered-by">
+			<?php echo date('Y'); ?> <?php echo '<a href="'.home_url().'">'.get_bloginfo('name').' - '.get_bloginfo('description').'</a>'; ?>
+                <span class="sep"> — </span>
+                <span> Sitio web diseñado y desarrollado por </span>
+                <a class="credits" href="https://pinkxel.com" target="_blank" title="pinkxel estudio digital" alt="pinkxel estudio digital">pinkxel.com</a>
 				<?php
 				printf(
 					/* translators: %s: WordPress. */
-					esc_html__( 'Proudly powered by %s.', 'twentytwentyone' ),
-					'<a href="' . esc_url( __( 'https://wordpress.org/', 'twentytwentyone' ) ) . '">WordPress</a>'
+					esc_html__( 'usando %s.', 'twentytwentyone' ),
+					'<a href="' . esc_url( __( 'https://wordpress.org/', 'twentytwentyone' ) ) . '" target="_blank" title="WordPress">WordPress</a>'
 				);
 				?>
 			</div><!-- .powered-by -->
